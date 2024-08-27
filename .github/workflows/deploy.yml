@@ -42,10 +42,13 @@ jobs:
                   host: ${{ secrets.VPS_HOST }}
                   username: ${{ secrets.VPS_USER }}
                   key: ${{ secrets.VPS_SSH_KEY }}
-                  source: "dist/*"
+                  source: |
+                      dist/*
+                      package.json
+                      package-lock.json
                   target: "/var/www/one-daily-blog-backend"
 
-            - name: Start Node.js API
+            - name: Install production dependencies
               uses: appleboy/ssh-action@v1.0.3
               with:
                   host: ${{ secrets.VPS_HOST }}
@@ -54,4 +57,12 @@ jobs:
                   script: |
                       cd /var/www/one-daily-blog-backend
                       npm install --production
+
+            - name: Start Node.js API
+              uses: appleboy/ssh-action@v1.0.3
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.VPS_SSH_KEY }}
+                  script: |
                       pm2 reload all --update-env || pm2 start dist/server.js --name "one-daily-blog-backend" --watch
