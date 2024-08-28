@@ -7,8 +7,8 @@
         "start": "node dist/server.js",
         "dev": "ts-node server.ts",
         "build": "tsc",
-        "serve": "pm2 start dist/server.js --name \"one-daily-blog-backend\" --watch",
-        "letsgo": "npm install && npm run build && npm run serve"
+        "serve": "node dist/server.js",
+        "deploy:prod": "npm install --legacy-peer-deps && npm run build && npm run serve"
     },
     "dependencies": {
         "cors": "^2.8.5",

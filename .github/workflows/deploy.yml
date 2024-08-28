@@ -30,6 +30,4 @@ jobs:
             cd /var/www/one-daily-blog-backend
             git pull origin main
             sudo npm install --legacy-peer-deps
-            sudo npm run build
-            sudo pm2 delete "one-daily-blog-backend" || true
-            sudo pm2 start dist/server.js --name "one-daily-blog-backend" --watch
+            sudo npm run deploy:prod
