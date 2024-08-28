@@ -27,7 +27,7 @@ server.use(morgan("combined"));
 server.use(cors());
 server.use(express.json());
 
-server.get("/api/posts", async (req, res) => {
+server.get("/posts", async (req, res) => {
     const { limit = 10, offset = 0 } = req.query;
     try {
         const query = `
@@ -57,7 +57,7 @@ server.get("/api/posts", async (req, res) => {
     }
 });
 
-server.get("/api/posts/random", async (req, res) => {
+server.get("/posts/random", async (req, res) => {
     const { n = 3 } = req.query;
     try {
         const query = `
@@ -87,7 +87,7 @@ server.get("/api/posts/random", async (req, res) => {
     }
 });
 
-server.get("/api/posts/:slug", async (req, res) => {
+server.get("/posts/:slug", async (req, res) => {
     const { slug } = req.params;
     try {
         const query = `
@@ -119,7 +119,7 @@ server.get("/api/posts/:slug", async (req, res) => {
     }
 });
 
-server.post("/api/posts/generate", async (req, res) => {
+server.post("/posts/generate", async (req, res) => {
     const author = "Sergio Márquez";
 
     try {
