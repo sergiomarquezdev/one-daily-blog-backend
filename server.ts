@@ -1,10 +1,11 @@
 import express from "express";
 import morgan from "morgan";
 import pkg from "pg";
-const { Pool } = pkg;
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import cors from "cors";
+
+const { Pool } = pkg;
 
 dotenv.config();
 

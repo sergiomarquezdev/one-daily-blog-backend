@@ -7,7 +7,7 @@
         "start": "node dist/server.js",
         "dev": "ts-node server.ts",
         "build": "tsc",
-        "serve": "node dist/server.js",
+        "serve": "pm2 start dist/server.js --name \"one-daily-blog-backend\" --watch",
         "letsgo": "npm install && npm run build && npm run serve"
     },
     "dependencies": {
