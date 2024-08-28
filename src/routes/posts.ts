@@ -1,5 +1,10 @@
-import {Router} from "express";
-import {generatePost, getPostBySlug, getPosts, getRandomPosts} from "../controllers/postsController";
+import { Router } from "express";
+import {
+    generatePost,
+    getPostBySlug,
+    getPosts,
+    getRandomPosts,
+} from "../controllers/postsController";
 
 const router = Router();
 

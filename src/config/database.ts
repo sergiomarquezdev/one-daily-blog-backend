@@ -1,9 +1,9 @@
-import {Pool} from "pg";
+import { Pool } from "pg";
 import dotenv from "dotenv";
 
 dotenv.config();
 
-const {PGHOST, PGDATABASE, PGUSER, PGPASSWORD} = process.env;
+const { PGHOST, PGDATABASE, PGUSER, PGPASSWORD } = process.env;
 
 const pool = new Pool({
     host: PGHOST || "",
@@ -11,7 +11,7 @@ const pool = new Pool({
     user: PGUSER || "",
     password: decodeURIComponent(PGPASSWORD || ""),
     port: 5432,
-    ssl: {rejectUnauthorized: true},
+    ssl: { rejectUnauthorized: true },
 });
 
 export default pool;

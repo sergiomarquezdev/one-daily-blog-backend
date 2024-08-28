@@ -1,9 +1,9 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import pool from "../config/database";
 import openai from "../config/openai";
 
 export const getPosts = async (req: Request, res: Response) => {
-    const {limit = 10, offset = 0} = req.query;
+    const { limit = 10, offset = 0 } = req.query;
     try {
         const query = `
             SELECT p.id,
@@ -27,12 +27,12 @@ export const getPosts = async (req: Request, res: Response) => {
         res.json(result.rows);
     } catch (err) {
         console.error("Error en la consulta de la base de datos:", err);
-        res.status(500).json({error: "Error interno del servidor"});
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 };
 
 export const getRandomPosts = async (req: Request, res: Response) => {
-    const {n = 3} = req.query;
+    const { n = 3 } = req.query;
     try {
         const query = `
             SELECT p.id,
@@ -56,12 +56,12 @@ export const getRandomPosts = async (req: Request, res: Response) => {
         res.json(result.rows);
     } catch (err) {
         console.error("Database query error:", err);
-        res.status(500).json({error: "Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
     }
 };
 
 export const getPostBySlug = async (req: Request, res: Response) => {
-    const {slug} = req.params;
+    const { slug } = req.params;
     try {
         const query = `
             SELECT p.id,
@@ -82,13 +82,13 @@ export const getPostBySlug = async (req: Request, res: Response) => {
         `;
         const result = await pool.query(query, [slug]);
         if (result.rows.length === 0) {
-            res.status(404).json({error: "Post no encontrado"});
+            res.status(404).json({ error: "Post no encontrado" });
         } else {
             res.json(result.rows[0]);
         }
     } catch (err) {
         console.error("Error en la consulta de la base de datos:", err);
-        res.status(500).json({error: "Error interno del servidor"});
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 };
 
@@ -96,9 +96,11 @@ export const generatePost = async (req: Request, res: Response) => {
     const author = "Sergio Márquez";
     const secretKeyFromEnv = process.env.GENERATEPOST_SECRETKEY;
 
-    const {secretKeyFromParams} = req.query;
+    const { secretKeyFromParams } = req.query;
     if (secretKeyFromParams !== secretKeyFromEnv) {
-        return res.status(403).json({error: "Acceso denegado: secretKey inválida."});
+        return res
+            .status(403)
+            .json({ error: "Acceso denegado: secretKey inválida." });
     }
 
     try {
@@ -118,24 +120,25 @@ export const generatePost = async (req: Request, res: Response) => {
             messages: [
                 {
                     role: "system",
-                    content: `Eres un asistente experto en tecnología, programación y creación de contenido técnico para blogs, con un enfoque en generar artículos detallados y educativos sobre temas de programación, tecnologías emergentes, y prácticas de desarrollo. Tu tarea es generar posts de blog que sean técnicos, informativos y profundos, con el objetivo de educar a una audiencia compuesta por programadores, desarrolladores y entusiastas de la tecnología. Asegúrate de que el contenido siga las mejores prácticas de SEO, sea original, esté bien estructurado, y explique conceptos técnicos de manera clara y precisa. El contenido debe ser útil para profesionales que buscan mejorar sus habilidades y mantenerse al día con las últimas innovaciones. El resultado debe ser entregado en formato JSON, con los campos nombrados según el modelo de datos proporcionado`,
+                    content: `Eres un asistente experto en tecnología, programación y creación de contenido técnico para blogs. Tu tarea principal es generar artículos educativos, detallados y optimizados para SEO sobre temas relacionados con la programación y las tecnologías web. Estos artículos deben estar dirigidos a una audiencia profesional de desarrolladores, proporcionando explicaciones claras y accesibles de conceptos complejos, contenido original, y ejemplos prácticos.Asegúrate de que el contenido sea técnicamente preciso, actualizado y relevante para las tendencias actuales. Estructura el contenido de manera lógica, mantén un tono consistente y formatea el artículo en JSON de acuerdo con el modelo de datos especificado.
+                        Incorpora palabras clave relevantes sin comprometer la naturalidad del texto. Usa títulos y subtítulos optimizados, así como meta descripciones concisas y atractivas.
+                        Mantén un tono profesional pero accesible. Proporciona ejemplos de código que los desarrolladores puedan aplicar directamente en sus proyectos. El artículo debe ser exhaustivo, cubriendo tanto la teoría como la práctica del tema abordado.
+                        Revisa las fuentes más recientes y asegúrate de que todas las referencias estén actualizadas al último trimestre.`,
                 },
                 {
                     role: "user",
-                    content: `Necesito que generes un post de blog completo en formato JSON que siga la siguiente estructura basada en mi entidad Post:
-                    - **id**: (Generar como null, será autogenerado en la base de datos)
-                    - **title**: Un título atractivo y optimizado para SEO de máximo 200 caracteres que resuma el tema principal del post. Debe captar la atención del lector y ser relevante para las tendencias actuales en programación y desarrollo tecnológico.
-                    - **content**: Un cuerpo del artículo, escrito en un tono técnico y profesional. El contenido debe explicar detalladamente el tema, abordar conceptos clave de programación o tecnología, proporcionar ejemplos de código cuando sea necesario, y mantener al lector comprometido a lo largo del texto. Es crucial que la información sea actual, precisa, y de alta calidad, evitando ser un mero resumen de otras fuentes. El artículo debe ser original y no incurrir en plagio. Además, formatea el contenido en HTML con una semántica adecuada y optimizada para SEO. El campo en PostgreSQL es de tipo TEXT.
-                    - **contentShort**: Una breve explicación concisa de máximo 100 caracteres que indique claramente de qué trata el post, diferenciándose del título pero proporcionando un resumen muy directo del contenido.
-                    - **contentResume**: Un breve resumen de máximo 200 caracteres que resuma los puntos clave del post. Este resumen debe ser conciso, informativo y capaz de atraer al lector a profundizar en el contenido.
-                    - **urlSlug**: Genera un slug URL único y amigable para SEO basado en el título del artículo de máximo 200 caracteres. Este debe ser corto, descriptivo y relevante para el contenido del post.
-                    - **createdAt**: (Generar como null, será autogenerado al insertar en la base de datos)
-                    - **updatedAt**: (Generar como null, será autogenerado al insertar en la base de datos)
-                    - **tags**: Una lista de 5 etiquetas relevantes para el tema del post. Estas etiquetas deben ayudar a clasificar el contenido en categorías específicas dentro del campo de la programación y la tecnología.
-                    - **isPublished**: (Fijar como false por defecto)
-                    Asegúrate de que el contenido sea completamente original, detallado y pase las verificaciones de plagio. El estilo debe ser técnico y alineado con el tono profesional que buscan los lectores del blog, evitando simplificaciones excesivas y enfocándose en aportar valor a programadores y desarrolladores. El post debe estar optimizado para SEO sin sacrificar la calidad de la información ni la legibilidad.
-                    Por favor, solamente devuelve el JSON bien formado, no incluyas nada más.
-                    Aquí tienes un listado de los últimos 50 content_short para que no generes un post parecido a estos: ${recentContentShorts}`,
+                    content: `Por favor, genera un artículo completo en formato JSON siguiendo esta estructura basada en la entidad 'Post':
+                    - **id**: (Establecer como null)
+                    - **title**: Un título atractivo y optimizado para SEO de hasta 200 caracteres que resuma el tema principal del post, relevante para las tendencias actuales en programación y tecnología.
+                    - **content**: Un artículo detallado y bien estructurado en un tono técnico. El contenido debe profundizar en el tema, cubriendo conceptos clave de programación o tecnologías, proporcionando ejemplos de código y manteniendo al lector comprometido. Debe ser original, libre de plagio, y formateado en HTML optimizado para SEO. El artículo debe aportar un valor significativo a los desarrolladores y entusiastas tecnológicos que buscan profundizar en su experiencia. Utiliza las etiquetas HTML apropiadas para encabezados, listas y bloques de código, todas optimizado para SEO.
+                    - **contentShort**: Un resumen conciso de 100 caracteres del post, diferente del título, que indique claramente de qué trata el contenido.
+                    - **contentResume**: Un resumen de 200 caracteres que resuma los puntos clave del post, animando a los lectores a profundizar en el contenido.
+                    - **urlSlug**: Un slug único y amigable para SEO basado en el título, de hasta 200 caracteres, conciso y descriptivo.
+                    - **createdAt**: (Establecer como null)
+                    - **updatedAt**: (Establecer como null)
+                    - **tags**: Una lista de 5 etiquetas relevantes que clasifiquen el contenido dentro del ámbito de la programación y la tecnología.
+                    - **isPublished**: (Establecer como false)
+                    Asegúrate de que el contenido sea técnicamente detallado, altamente informativo y completamente original. El estilo de escritura debe ser profesional, con un enfoque en ofrecer valor a desarrolladores y profesionales tecnológicos. El post debe pasar las verificaciones de plagio. Además, el contenido debe estar optimizado para SEO sin comprometer la profundidad y precisión de la información. Devuelve solo la estructura JSON bien formada. No repitas temas de los posts recientes, para ello aquí tienes los últimos 50 resúmenes de 'contentShort' para que no repitas temas: ${recentContentShorts}.`,
                 },
             ],
         });
@@ -152,11 +155,12 @@ export const generatePost = async (req: Request, res: Response) => {
             );
             postData = JSON.parse(jsonContent ?? "");
         } catch (err: any) {
-            throw new Error("Error al parsear la respuesta de OpenAI: " + err.message
+            throw new Error(
+                "Error al parsear la respuesta de OpenAI: " + err.message
             );
         }
 
-        const {title, content, contentShort, contentResume, urlSlug, tags} =
+        const { title, content, contentShort, contentResume, urlSlug, tags } =
             postData;
         if (!title || !content || !contentShort || !contentResume || !urlSlug) {
             return res.status(400).json({
