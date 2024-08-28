@@ -93,12 +93,12 @@ export const getPostBySlug = async (req: Request, res: Response) => {
 };
 
 export const generatePost = async (req: Request, res: Response) => {
-    const author = "Sergio M·rquez";
+    const author = "Sergio M√°rquez";
     const secretKeyFromEnv = process.env.GENERATEPOST_SECRETKEY;
 
     const {secretKeyFromParams} = req.query;
     if (secretKeyFromParams !== secretKeyFromEnv) {
-        return res.status(403).json({error: "Acceso denegado: secretKey inv·lida."});
+        return res.status(403).json({error: "Acceso denegado: secretKey inv√°lida."});
     }
 
     try {
@@ -118,30 +118,30 @@ export const generatePost = async (req: Request, res: Response) => {
             messages: [
                 {
                     role: "system",
-                    content: `Eres un asistente experto en tecnologÌa, programaciÛn y creaciÛn de contenido tÈcnico para blogs, con un enfoque en generar artÌculos detallados y educativos sobre temas de programaciÛn, tecnologÌas emergentes, y pr·cticas de desarrollo. Tu tarea es generar posts de blog que sean tÈcnicos, informativos y profundos, con el objetivo de educar a una audiencia compuesta por programadores, desarrolladores y entusiastas de la tecnologÌa. Aseg˙rate de que el contenido siga las mejores pr·cticas de SEO, sea original, estÈ bien estructurado, y explique conceptos tÈcnicos de manera clara y precisa. El contenido debe ser ˙til para profesionales que buscan mejorar sus habilidades y mantenerse al dÌa con las ˙ltimas innovaciones. El resultado debe ser entregado en formato JSON, con los campos nombrados seg˙n el modelo de datos proporcionado`,
+                    content: `Eres un asistente experto en tecnolog√≠a, programaci√≥n y creaci√≥n de contenido t√©cnico para blogs, con un enfoque en generar art√≠culos detallados y educativos sobre temas de programaci√≥n, tecnolog√≠as emergentes, y pr√°cticas de desarrollo. Tu tarea es generar posts de blog que sean t√©cnicos, informativos y profundos, con el objetivo de educar a una audiencia compuesta por programadores, desarrolladores y entusiastas de la tecnolog√≠a. Aseg√∫rate de que el contenido siga las mejores pr√°cticas de SEO, sea original, est√© bien estructurado, y explique conceptos t√©cnicos de manera clara y precisa. El contenido debe ser √∫til para profesionales que buscan mejorar sus habilidades y mantenerse al d√≠a con las √∫ltimas innovaciones. El resultado debe ser entregado en formato JSON, con los campos nombrados seg√∫n el modelo de datos proporcionado`,
                 },
                 {
                     role: "user",
                     content: `Necesito que generes un post de blog completo en formato JSON que siga la siguiente estructura basada en mi entidad Post:
-                    - **id**: (Generar como null, ser· autogenerado en la base de datos)
-                    - **title**: Un tÌtulo atractivo y optimizado para SEO que resuma el tema principal del post. Debe captar la atenciÛn del lector y ser relevante para las tendencias actuales en programaciÛn y desarrollo tecnolÛgico.
-                    - **content**: Un cuerpo del artÌculo de aproximadamente 500 a 2000 palabras, escrito en un tono tÈcnico y profesional. El contenido debe explicar detalladamente el tema, abordar conceptos clave de programaciÛn o tecnologÌa, proporcionar ejemplos de cÛdigo cuando sea necesario, y mantener al lector comprometido a lo largo del texto. Es crucial que la informaciÛn sea actual, precisa, y de alta calidad, evitando ser un mero resumen de otras fuentes. El artÌculo debe ser original y no incurrir en plagio. Adem·s, formatea el contenido en HTML con una sem·ntica adecuada y optimizada para SEO.
-                    - **contentShort**: Una breve explicaciÛn concisa, de no m·s de 100 caracteres, que indique claramente de quÈ trata el post, diferenci·ndose del tÌtulo pero proporcionando un resumen muy directo del contenido.
-                    - **contentResume**: Un breve resumen de no m·s de 200 caracteres que resuma los puntos clave del post. Este resumen debe ser conciso, informativo y capaz de atraer al lector a profundizar en el contenido.
-                    - **urlSlug**: Genera un slug URL ˙nico y amigable para SEO basado en el tÌtulo del artÌculo. Este debe ser corto, descriptivo y relevante para el contenido del post.
-                    - **createdAt**: (Generar como null, ser· autogenerado al insertar en la base de datos)
-                    - **updatedAt**: (Generar como null, ser· autogenerado al insertar en la base de datos)
-                    - **tags**: Una lista de 5 etiquetas relevantes para el tema del post. Estas etiquetas deben ayudar a clasificar el contenido en categorÌas especÌficas dentro del campo de la programaciÛn y la tecnologÌa.
+                    - **id**: (Generar como null, ser√° autogenerado en la base de datos)
+                    - **title**: Un t√≠tulo atractivo y optimizado para SEO que resuma el tema principal del post. Debe captar la atenci√≥n del lector y ser relevante para las tendencias actuales en programaci√≥n y desarrollo tecnol√≥gico.
+                    - **content**: Un cuerpo del art√≠culo de aproximadamente 500 a 2000 palabras, escrito en un tono t√©cnico y profesional. El contenido debe explicar detalladamente el tema, abordar conceptos clave de programaci√≥n o tecnolog√≠a, proporcionar ejemplos de c√≥digo cuando sea necesario, y mantener al lector comprometido a lo largo del texto. Es crucial que la informaci√≥n sea actual, precisa, y de alta calidad, evitando ser un mero resumen de otras fuentes. El art√≠culo debe ser original y no incurrir en plagio. Adem√°s, formatea el contenido en HTML con una sem√°ntica adecuada y optimizada para SEO.
+                    - **contentShort**: Una breve explicaci√≥n concisa, de no m√°s de 100 caracteres, que indique claramente de qu√© trata el post, diferenci√°ndose del t√≠tulo pero proporcionando un resumen muy directo del contenido.
+                    - **contentResume**: Un breve resumen de no m√°s de 200 caracteres que resuma los puntos clave del post. Este resumen debe ser conciso, informativo y capaz de atraer al lector a profundizar en el contenido.
+                    - **urlSlug**: Genera un slug URL √∫nico y amigable para SEO basado en el t√≠tulo del art√≠culo. Este debe ser corto, descriptivo y relevante para el contenido del post.
+                    - **createdAt**: (Generar como null, ser√° autogenerado al insertar en la base de datos)
+                    - **updatedAt**: (Generar como null, ser√° autogenerado al insertar en la base de datos)
+                    - **tags**: Una lista de 5 etiquetas relevantes para el tema del post. Estas etiquetas deben ayudar a clasificar el contenido en categor√≠as espec√≠ficas dentro del campo de la programaci√≥n y la tecnolog√≠a.
                     - **isPublished**: (Fijar como false por defecto)
-                    Aseg˙rate de que el contenido sea completamente original, detallado y pase las verificaciones de plagio. El estilo debe ser tÈcnico y alineado con el tono profesional que buscan los lectores del blog, evitando simplificaciones excesivas y enfoc·ndose en aportar valor a programadores y desarrolladores. El post debe estar optimizado para SEO sin sacrificar la calidad de la informaciÛn ni la legibilidad.
-                    Por favor, solamente devuelve el JSON bien formado, no incluyas nada m·s.
-                    AquÌ tienes un listado de los ˙ltimos 50 content_short para que no generes un post parecido a estos: ${recentContentShorts}`,
+                    Aseg√∫rate de que el contenido sea completamente original, detallado y pase las verificaciones de plagio. El estilo debe ser t√©cnico y alineado con el tono profesional que buscan los lectores del blog, evitando simplificaciones excesivas y enfoc√°ndose en aportar valor a programadores y desarrolladores. El post debe estar optimizado para SEO sin sacrificar la calidad de la informaci√≥n ni la legibilidad.
+                    Por favor, solamente devuelve el JSON bien formado, no incluyas nada m√°s.
+                    Aqu√≠ tienes un listado de los √∫ltimos 50 content_short para que no generes un post parecido a estos: ${recentContentShorts}`,
                 },
             ],
         });
 
         if (!completion || !completion.choices || !completion.choices.length) {
-            throw new Error("Respuesta de OpenAI vacÌa o malformada");
+            throw new Error("Respuesta de OpenAI vac√≠a o malformada");
         }
 
         let postData;
