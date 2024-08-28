@@ -224,7 +224,7 @@ server.post("/api/posts/generate", async (req, res) => {
     }
 });
 
-const port = process.env.PORT || 4000;
+const port = process.env.PORT || 4100;
 server.listen(port, () => {
     console.log(`Node Express server listening on http://localhost:${port}`);
 });
