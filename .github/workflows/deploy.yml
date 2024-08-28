@@ -25,9 +25,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            sudo su
+            sudo git config --global --add safe.directory /var/www/one-daily-blog-backend
+            sudo chown -R ${{ secrets.VPS_USER }}:$USER /var/www/one-daily-blog-backend
             cd /var/www/one-daily-blog-backend
             git pull origin main
-            npm install --legacy-peer-deps
-            npm run build
+            sudo npm install --legacy-peer-deps
+            sudo npm run build
             pm2 reload all --update-env || pm2 start dist/server.js --name "one-daily-blog-backend" --watch
