@@ -29,5 +29,5 @@ jobs:
             sudo git pull origin main
             sudo npm install --legacy-peer-deps
             sudo npm run build
-            sudo pm2 stop "one-daily-blog-backend"
-            sudo pm2 start dist/server.js --name "one-daily-blog-backend" --watch
+            sudo pm2 reload dist/server.js --name "one-daily-blog-backend" --watch --update-env
+
