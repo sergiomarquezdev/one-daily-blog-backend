@@ -1,7 +1,6 @@
 {
     "name": "one-daily-blog-backend",
     "version": "1.0.0",
-    "type": "module",
     "main": "dist/server.js",
     "scripts": {
         "build": "babel src --out-dir dist --extensions \".ts\"",
