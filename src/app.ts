@@ -9,7 +9,6 @@ app.use(morgan("combined"));
 app.use(cors);
 app.use(express.json());
 
-// Rutas
 app.use(postsRoutes);
 
 export default app;
