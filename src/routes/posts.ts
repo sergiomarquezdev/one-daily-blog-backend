@@ -5,6 +5,7 @@ import {
     getRandomPosts,
     getPreviousPostById,
     getNextPostById,
+    getTotalPosts,
     generatePost,
 } from "../controllers/postsController";
 
@@ -15,6 +16,7 @@ router.get("/posts/random", getRandomPosts);
 router.get("/posts/slug", getPostBySlug);
 router.get('/posts/previous', getPreviousPostById);
 router.get('/posts/next', getNextPostById);
+router.get("/posts/total", getTotalPosts);
 router.post("/posts/generate", generatePost);
 
 export default router;

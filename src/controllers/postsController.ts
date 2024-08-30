@@ -110,8 +110,8 @@ export const getPreviousPostById = async (req: Request, res: Response) => {
             FROM blog.posts p
                      LEFT JOIN blog.post_tags t ON p.id = t.post_id
             WHERE p.is_published = true
-              AND (p.id < $1 OR (p.id = (SELECT MAX(id) FROM blog.posts WHERE is_published = true) AND
-                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id < $1 AND is_published = true)))
+              AND (p.id > $1 OR (p.id = (SELECT MIN(id) FROM blog.posts WHERE is_published = true) AND
+                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id > $1 AND is_published = true)))
             GROUP BY p.id
             ORDER BY p.id DESC LIMIT 1
         `;
@@ -141,12 +141,27 @@ export const getNextPostById = async (req: Request, res: Response) => {
             FROM blog.posts p
                      LEFT JOIN blog.post_tags t ON p.id = t.post_id
             WHERE p.is_published = true
-              AND (p.id > $1 OR (p.id = (SELECT MIN(id) FROM blog.posts WHERE is_published = true) AND
-                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id > $1 AND is_published = true)))
+              AND (p.id < $1 OR (p.id = (SELECT MAX(id) FROM blog.posts WHERE is_published = true) AND
+                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id < $1 AND is_published = true)))
             GROUP BY p.id
             ORDER BY p.id ASC LIMIT 1
         `;
         const result = await pool.query(query, [postId]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("Error en la consulta de la base de datos:", err);
+        res.status(500).json({error: "Error interno del servidor"});
+    }
+};
+
+export const getTotalPosts = async (req: Request, res: Response) => {
+    try {
+        const query = `
+            SELECT COUNT(*) AS total_posts
+            FROM blog.posts
+            WHERE is_published = true
+        `;
+        const result = await pool.query(query);
         res.json(result.rows[0]);
     } catch (err) {
         console.error("Error en la consulta de la base de datos:", err);
