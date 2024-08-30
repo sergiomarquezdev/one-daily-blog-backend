@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import {Request, Response} from "express";
 import pool from "../config/database";
 import openai from "../config/openai";
 
 export const getPosts = async (req: Request, res: Response) => {
-    const { limit = 10, offset = 0 } = req.query;
+    const {limit = 10, offset = 0} = req.query;
     try {
         const query = `
             SELECT p.id,
@@ -21,18 +21,19 @@ export const getPosts = async (req: Request, res: Response) => {
             WHERE p.is_published = true
             GROUP BY p.id
             ORDER BY p.created_at DESC
-            LIMIT $1 OFFSET $2
+                LIMIT $1
+            OFFSET $2
         `;
         const result = await pool.query(query, [limit, offset]);
         res.json(result.rows);
     } catch (err) {
         console.error("Error en la consulta de la base de datos:", err);
-        res.status(500).json({ error: "Error interno del servidor" });
+        res.status(500).json({error: "Error interno del servidor"});
     }
 };
 
 export const getRandomPosts = async (req: Request, res: Response) => {
-    const { n = 3 } = req.query;
+    const {n = 3} = req.query;
     try {
         const query = `
             SELECT p.id,
@@ -50,18 +51,18 @@ export const getRandomPosts = async (req: Request, res: Response) => {
             WHERE p.is_published = true
             GROUP BY p.id
             ORDER BY RANDOM()
-            LIMIT $1
+                LIMIT $1
         `;
         const result = await pool.query(query, [n]);
         res.json(result.rows);
     } catch (err) {
         console.error("Database query error:", err);
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({error: "Internal server error"});
     }
 };
 
 export const getPostBySlug = async (req: Request, res: Response) => {
-    const { slug } = req.params;
+    const {slug} = req.params;
     try {
         const query = `
             SELECT p.id,
@@ -82,37 +83,96 @@ export const getPostBySlug = async (req: Request, res: Response) => {
         `;
         const result = await pool.query(query, [slug]);
         if (result.rows.length === 0) {
-            res.status(404).json({ error: "Post no encontrado" });
+            res.status(404).json({error: "Post no encontrado"});
         } else {
             res.json(result.rows[0]);
         }
     } catch (err) {
         console.error("Error en la consulta de la base de datos:", err);
-        res.status(500).json({ error: "Error interno del servidor" });
+        res.status(500).json({error: "Error interno del servidor"});
     }
 };
+
+export const getPreviousPostById = async (req: Request, res: Response) => {
+    const {postId} = req.query;
+    try {
+        const query = `
+            SELECT p.id,
+                   p.title,
+                   p.url_slug,
+                   p.content,
+                   p.content_resume,
+                   p.is_published,
+                   p.created_at,
+                   p.updated_at,
+                   p.author,
+                   ARRAY_AGG(t.tag) AS post_tags
+            FROM blog.posts p
+                     LEFT JOIN blog.post_tags t ON p.id = t.post_id
+            WHERE p.is_published = true
+              AND p.id < $1
+            GROUP BY p.id
+            ORDER BY p.id DESC LIMIT 1
+        `;
+        const result = await pool.query(query, [postId]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("Error en la consulta de la base de datos:", err);
+        res.status(500).json({error: "Error interno del servidor"});
+    }
+};
+
+
+export const getNextPostById = async (req: Request, res: Response) => {
+    const {postId} = req.query;
+    try {
+        const query = `
+            SELECT p.id,
+                   p.title,
+                   p.url_slug,
+                   p.content,
+                   p.content_resume,
+                   p.is_published,
+                   p.created_at,
+                   p.updated_at,
+                   p.author,
+                   ARRAY_AGG(t.tag) AS post_tags
+            FROM blog.posts p
+                     LEFT JOIN blog.post_tags t ON p.id = t.post_id
+            WHERE p.is_published = true
+              AND p.id > $1
+            GROUP BY p.id
+            ORDER BY p.id ASC LIMIT 1
+        `;
+        const result = await pool.query(query, [postId]);
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error("Error en la consulta de la base de datos:", err);
+        res.status(500).json({error: "Error interno del servidor"});
+    }
+};
+
 
 export const generatePost = async (req: Request, res: Response) => {
     const author = "Sergio Márquez";
     const secretKeyFromEnv = process.env.GENERATEPOST_SECRETKEY;
 
-    const { secretKeyFromParams } = req.query;
+    const {secretKeyFromParams} = req.query;
     if (secretKeyFromParams !== secretKeyFromEnv) {
         return res
             .status(403)
-            .json({ error: "Acceso denegado: secretKey inválida." });
+            .json({error: "Acceso denegado: secretKey inválida."});
     }
 
     try {
         const recentPostsQuery = `
             SELECT content_short
             FROM blog.posts
-            ORDER BY id DESC
-            LIMIT 50
+            ORDER BY id DESC LIMIT 50
         `;
         const recentPostsResult = await pool.query(recentPostsQuery);
         const recentContentShorts = recentPostsResult.rows
-            .map((row) => row.content_short)
+            .map((row: any) => row.content_short)
             .join(", ");
 
         const completion = await openai.chat.completions.create({
@@ -160,7 +220,7 @@ export const generatePost = async (req: Request, res: Response) => {
             );
         }
 
-        const { title, content, contentShort, contentResume, urlSlug, tags } =
+        const {title, content, contentShort, contentResume, urlSlug, tags} =
             postData;
         if (!title || !content || !contentShort || !contentResume || !urlSlug) {
             return res.status(400).json({
@@ -171,8 +231,7 @@ export const generatePost = async (req: Request, res: Response) => {
         const query = `
             INSERT INTO blog.posts (title, content, content_short, content_resume, author, url_slug, created_at,
                                     is_published)
-            VALUES ($1, $2, $3, $4, $5, $6, NOW(), true)
-            RETURNING *
+            VALUES ($1, $2, $3, $4, $5, $6, NOW(), true) RETURNING *
         `;
 
         const values = [
@@ -191,7 +250,7 @@ export const generatePost = async (req: Request, res: Response) => {
             const tagQuery = `
                 INSERT INTO blog.post_tags (post_id, tag)
                 VALUES
-                ${tags.map((_: any, i: any) => `($1, $${i + 2})`).join(", ")}
+                    ${tags.map((_: any, i: any) => `($1, $${i + 2})`).join(", ")}
             `;
             await pool.query(tagQuery, [insertedPost.id, ...tags]);
         }
