@@ -62,7 +62,7 @@ export const getRandomPosts = async (req: Request, res: Response) => {
 };
 
 export const getPostBySlug = async (req: Request, res: Response) => {
-    const {slug} = req.params;
+    const {urlSlug} = req.query;
     try {
         const query = `
             SELECT p.id,
@@ -81,7 +81,7 @@ export const getPostBySlug = async (req: Request, res: Response) => {
               AND p.is_published = true
             GROUP BY p.id
         `;
-        const result = await pool.query(query, [slug]);
+        const result = await pool.query(query, [urlSlug]);
         if (result.rows.length === 0) {
             res.status(404).json({error: "Post no encontrado"});
         } else {
