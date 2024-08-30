@@ -26,6 +26,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd /var/www/one-daily-blog-backend
+            sudo rm -rf node_modules
+            sudo rm package-lock.json
+            sudo npm cache clean -f
             sudo git pull origin main
             sudo npm install --legacy-peer-deps
             sudo npm run build
