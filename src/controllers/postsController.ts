@@ -110,7 +110,8 @@ export const getPreviousPostById = async (req: Request, res: Response) => {
             FROM blog.posts p
                      LEFT JOIN blog.post_tags t ON p.id = t.post_id
             WHERE p.is_published = true
-              AND p.id < $1
+              AND (p.id < $1 OR (p.id = (SELECT MAX(id) FROM blog.posts WHERE is_published = true) AND
+                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id < $1 AND is_published = true)))
             GROUP BY p.id
             ORDER BY p.id DESC LIMIT 1
         `;
@@ -140,7 +141,8 @@ export const getNextPostById = async (req: Request, res: Response) => {
             FROM blog.posts p
                      LEFT JOIN blog.post_tags t ON p.id = t.post_id
             WHERE p.is_published = true
-              AND p.id > $1
+              AND (p.id > $1 OR (p.id = (SELECT MIN(id) FROM blog.posts WHERE is_published = true) AND
+                                 NOT EXISTS (SELECT 1 FROM blog.posts WHERE id > $1 AND is_published = true)))
             GROUP BY p.id
             ORDER BY p.id ASC LIMIT 1
         `;
