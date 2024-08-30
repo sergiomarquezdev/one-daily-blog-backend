@@ -29,3 +29,6 @@ Thumbs.db
 
 # Idea
 .idea/
+
+# Bun
+bun.lockb
