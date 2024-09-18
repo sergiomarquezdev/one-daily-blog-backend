@@ -6,8 +6,9 @@ import {
     getPreviousPostById,
     getNextPostById,
     getTotalPosts,
-    generatePost,
+    generatePost
 } from "../controllers/postsController";
+import {generateSitemap} from "../controllers/utilsController";
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.get('/posts/previous', getPreviousPostById);
 router.get('/posts/next', getNextPostById);
 router.get("/posts/total", getTotalPosts);
 router.post("/posts/generate", generatePost);
+router.get("/sitemap/generate", generateSitemap)
 
 export default router;
