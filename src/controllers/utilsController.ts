@@ -15,7 +15,7 @@ export const generateSitemap = async (req: Request, res: Response) => {
 
     try {
         const query = `
-            SELECT url_slug, updated_at
+            SELECT url_slug, created_at
             FROM blog.posts
             WHERE is_published = true
         `;
@@ -31,10 +31,10 @@ export const generateSitemap = async (req: Request, res: Response) => {
             .ele('priority').txt('1.0').up()
             .up();
 
-        result.rows.forEach((row: { url_slug: string; updated_at: Date }) => {
+        result.rows.forEach((row: { url_slug: string; created_at: Date }) => {
             const postUrl = `https://blog.sergiomarquez.dev/post/${row.url_slug}`;
-            const lastMod = row.updated_at
-                ? row.updated_at.toISOString().split('T')[0]
+            const lastMod = row.created_at
+                ? row.created_at.toISOString().split('T')[0]
                 : new Date().toISOString().split('T')[0];
 
             urlSet.ele('url')
