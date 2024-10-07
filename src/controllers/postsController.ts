@@ -219,12 +219,7 @@ export const generatePost = async (req: Request, res: Response) => {
                     Asegúrate de que el contenido sea altamente informativo y completamente original. Si es necesario, cita referencias de los archivos que tienes acceso en el vector store.
                     No repitas temas de los posts recientes, para ello aquí tienes los últimos 50 resúmenes de 'contentShort': ${recentContentShorts}.`
                 }
-            ],
-            tool_resources: {
-                "file_search": {
-                    vector_store_ids: ["vs_3H34h3Kl7cbMgmYH8b4l3glf"] // Uso del vector store
-                }
-            }
+            ]
         });
 
         if (!completion || !completion.choices || !completion.choices.length) {
